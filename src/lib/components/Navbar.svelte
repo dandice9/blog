@@ -1,7 +1,4 @@
 <script>
-	import { onMount, onDestroy } from 'svelte';
-	let open = false;
-	let showFloating = false;
 	const categories = [
 		'Art market',
 		'Museums',
@@ -11,72 +8,80 @@
 		'Columns',
 		'Technology'
 	];
-
-	let handleScroll;
-
-	onMount(() => {
-		handleScroll = () => {
-			const y = window.scrollY || 0;
-			showFloating = y > 120;
-		};
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		handleScroll();
-	});
-
-	onDestroy(() => {
-		if (handleScroll) window.removeEventListener('scroll', handleScroll);
-	});
 </script>
 
-<!-- Single fixed navbar: uses compact mode when scrolled to avoid duplicate rendering -->
-<nav class={"navbar bg-base-100 fixed top-0 left-0 right-0 z-30 transition-all duration-200 " + (showFloating ? 'shadow-sm py-2' : 'py-3') }>
-	<div class="max-w-7xl mx-auto px-4 w-full">
-		<div class="w-full flex items-center">
-			<div class="navbar-start">
-				<a href="/" class="text-lg font-bold">MyBlog</a>
+<header class="sticky top-0 z-50 bg-base-100/95 backdrop-blur border-b border-base-300">
+	<div class="max-w-7xl mx-auto px-4">
+		<!-- relative supaya center bisa absolute -->
+		<div class="relative flex items-center h-14">
+			<!-- LEFT: Logo -->
+			<div class="flex items-center min-w-[120px]">
+				<a href="/" class="text-lg font-bold leading-none">MyBlog</a>
 			</div>
 
-			<div class="navbar-center hidden lg:flex">
-				<ul class="flex gap-6 text-sm text-neutral items-center whitespace-nowrap">
+			<!-- CENTER: Menu (absolute center) -->
+			<nav class="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center">
+				<ul class="menu menu-horizontal gap-5 px-1 text-sm whitespace-nowrap !flex !flex-row !items-center [&>li]:!inline-flex [&>li]:!items-center [&>li]:!w-auto [&>li>a]:!inline-flex [&>li>a]:!items-center [&>li>a]:!whitespace-nowrap [&>li>a]:!px-1">
 					{#each categories as c}
 						<li>
-							<a href={'/blog?cat=' + encodeURIComponent(c)} class="hover:text-primary px-2">{c}</a>
+							<a class="h-14 flex items-center px-1" href={'/blog?cat=' + encodeURIComponent(c)}>
+								{c}
+							</a>
 						</li>
 					{/each}
 				</ul>
-			</div>
+			</nav>
 
-			<div class="navbar-end ml-auto flex items-center">
-				<form action="/blog" method="get" class="hidden sm:block ml-4">
-					<input name="q" placeholder="Search" class="input input-sm input-bordered w-40 md:w-56" />
+			<!-- RIGHT: Search + Mobile Menu -->
+			<div class="ml-auto flex items-center gap-2 min-w-[220px] justify-end">
+				<!-- Desktop search -->
+				<form action="/blog" method="get" class="hidden lg:flex items-center">
+					<input
+						name="q"
+						placeholder="Search"
+						class="input input-bordered input-sm h-9 w-44 md:w-56"
+					/>
 				</form>
 
-				<button class="lg:hidden btn btn-ghost btn-square ml-2" on:click={() => (open = !open)} aria-label="menu">
-					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-					</svg>
-				</button>
+				<!-- Mobile hamburger dropdown -->
+				<details class="dropdown dropdown-end lg:hidden">
+					<summary class="btn btn-ghost btn-sm" aria-label="menu">☰</summary>
+					<ul class="menu dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+						{#each categories as c}
+							<li><a href={'/blog?cat=' + encodeURIComponent(c)}>{c}</a></li>
+						{/each}
+						<li class="pt-2">
+							<form action="/blog" method="get" class="px-2">
+								<input name="q" placeholder="Search" class="input input-sm input-bordered w-full" />
+							</form>
+						</li>
+					</ul>
+				</details>
 			</div>
 		</div>
-
-		{#if open}
-			<div class="lg:hidden mt-2 pb-3">
-				<ul class="flex flex-col gap-1">
-					{#each categories as c}
-						<li>
-							<a href={'/blog?cat=' + encodeURIComponent(c)} class="block py-2 px-2 border-b border-base-300">{c}</a>
-						</li>
-					{/each}
-					<li class="pt-2 px-2">
-						<form action="/blog" method="get">
-							<input name="q" placeholder="Search" class="input input-sm input-bordered w-full" />
-						</form>
-					</li>
-				</ul>
-			</div>
-		{/if}
 	</div>
-</nav>
 
-<!-- spacer to preserve document flow when navbar is fixed (prevents content jump) -->
-<div class="h-14"></div>
+			<style>
+				/* Force navbar menu to be horizontal and inline despite any external overrides.
+					 Scoped to .navbar to avoid touching other menus. Uses !important to beat global rules. */
+				:global(.navbar .menu.menu-horizontal) {
+					display: flex !important;
+					flex-direction: row !important;
+					align-items: center !important;
+					gap: 1.25rem !important; /* match gap-5 */
+				}
+
+				:global(.navbar .menu.menu-horizontal > li) {
+					display: inline-flex !important;
+				}
+
+				:global(.navbar .menu.menu-horizontal > li > a) {
+					white-space: nowrap !important;
+					display: inline-flex !important;
+					align-items: center !important;
+					height: 56px !important; /* h-14 */
+					padding-left: 0.25rem !important;
+					padding-right: 0.25rem !important;
+				}
+			</style>
+</header>

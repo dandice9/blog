@@ -10,7 +10,7 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 <Navbar />
-<main>
+<main class="pt-14">
 	{@render children()}
 </main>
 <Footer />
