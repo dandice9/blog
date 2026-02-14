@@ -1,4 +1,7 @@
-<script>
+<script lang="ts">
+	import { mobileOpen } from '$lib/stores/mobileOpen';
+	import { browser } from '$app/environment';
+
 	const categories = [
 		'Art market',
 		'Museums',
@@ -8,9 +11,34 @@
 		'Columns',
 		'Technology'
 	];
+
+	const open = () => mobileOpen.set(true);
+	const close = () => mobileOpen.set(false);
+
+	// Lock scroll when drawer open and restore on close/cleanup
+	$effect(() => {
+		if (!browser) return;
+		if ($mobileOpen) document.body.style.overflow = 'hidden';
+		else document.body.style.overflow = '';
+
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
+
+	// ESC to close
+	function handleKey(e: KeyboardEvent) {
+		if (e.key === 'Escape' && $mobileOpen) mobileOpen.set(false);
+	}
+
+	$effect(() => {
+		if (!browser) return;
+		window.addEventListener('keydown', handleKey);
+		return () => window.removeEventListener('keydown', handleKey);
+	});
 </script>
 
-<header class="sticky top-0 z-50 bg-base-100/95 backdrop-blur border-b border-base-300">
+<header class="sticky top-0 z-30 bg-base-100/95 backdrop-blur border-b border-base-300" style="--drawer-w: min(80vw, 320px);">
 	<div class="max-w-7xl mx-auto px-4">
 		<!-- relative supaya center bisa absolute -->
 		<div class="relative flex items-center h-14">
@@ -43,24 +71,19 @@
 					/>
 				</form>
 
-				<!-- Mobile hamburger dropdown -->
-				<details class="dropdown dropdown-end lg:hidden">
-					<summary class="btn btn-ghost btn-sm" aria-label="menu">☰</summary>
-					<ul class="menu dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-						{#each categories as c}
-							<li><a href={'/blog?cat=' + encodeURIComponent(c)}>{c}</a></li>
-						{/each}
-						<li class="pt-2">
-							<form action="/blog" method="get" class="px-2">
-								<input name="q" placeholder="Search" class="input input-sm input-bordered w-full" />
-							</form>
-						</li>
-					</ul>
-				</details>
+				<!-- Mobile hamburger (opens push drawer) -->
+				<button
+					class="btn btn-ghost btn-sm lg:hidden"
+					class:hidden={$mobileOpen}
+					aria-label="menu"
+					aria-expanded={$mobileOpen}
+					on:click={open}
+				>
+					☰
+				</button>
 			</div>
 		</div>
 	</div>
-
 			<style>
 				/* Force navbar menu to be horizontal and inline despite any external overrides.
 					 Scoped to .navbar to avoid touching other menus. Uses !important to beat global rules. */
@@ -83,5 +106,37 @@
 					padding-left: 0.25rem !important;
 					padding-right: 0.25rem !important;
 				}
-			</style>
+
+	</style>
+
+				<!-- Mobile overlay (full screen, below drawer) -->
+				{#if $mobileOpen}
+					<button
+						class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+						aria-label="Close menu overlay"
+						on:click={() => mobileOpen.set(false)}
+					></button>
+				{/if}
+
+				<!-- Drawer panel (mobile) - starts below navbar -->
+				<aside class={`fixed right-0 top-14 bg-base-100 shadow-xl z-50 transform transition-transform duration-300 ease-out lg:hidden ${$mobileOpen ? 'translate-x-0' : 'translate-x-full'}`} style="width: var(--drawer-w); height: calc(100vh - 56px);" aria-hidden={!$mobileOpen}>
+					<div class="flex items-center justify-between p-4 border-b border-base-300">
+						<div class="font-bold">Menu</div>
+						<button class="btn btn-ghost btn-sm" aria-label="Close menu" on:click={close}>✕</button>
+					</div>
+
+					<nav class="p-4 overflow-auto">
+						<ul class="menu menu-vertical gap-1">
+							{#each categories as c}
+								<li><a href={'/blog?cat=' + encodeURIComponent(c)} on:click={close}>{c}</a></li>
+							{/each}
+						</ul>
+
+						<div class="pt-4">
+							<form action="/blog" method="get">
+								<input name="q" placeholder="Search" class="input input-bordered w-full" />
+							</form>
+						</div>
+					</nav>
+				</aside>
 </header>
