@@ -10,10 +10,18 @@
 		<meta name="description" content={post.excerpt} />
 	</svelte:head>
 
+
 {#if post}
-	
 
 	<article class="container">
+		{#if post?.coverImage}
+			<div class="post-hero">
+				<img src={post.coverImage} alt={post.title ?? 'Cover image'} loading="lazy" />
+			</div>
+		{:else}
+			<div class="post-hero placeholder" aria-hidden="true"></div>
+		{/if}
+
 		<div class="post-header">
 			<h1>{post.title}</h1>
 			<div class="post-meta">
@@ -127,5 +135,26 @@
 		color: #666;
 		font-size: 1.1rem;
 		margin-bottom: 2rem;
+	}
+
+	.post-hero {
+		width: 100%;
+		overflow: hidden;
+		border-radius: 12px;
+		margin-bottom: 1.25rem;
+		min-height: 200px;
+		background: linear-gradient(135deg, #f3f4f6, #eef7fb);
+	}
+
+	.post-hero img {
+		display: block;
+		width: 100%;
+		height: 320px;
+		object-fit: cover;
+	}
+
+	.post-hero.placeholder {
+		min-height: 180px;
+		background: linear-gradient(135deg, #f2f5ff 0%, #eef7f4 50%, #f7f3ff 100%);
 	}
 </style>

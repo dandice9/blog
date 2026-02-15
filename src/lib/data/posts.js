@@ -5,6 +5,7 @@ export const posts = [
 		author: 'Admin',
 		date: '2026-01-15',
 		excerpt: 'Selamat datang di blog saya. Ini adalah post pertama saya di SvelteKit.',
+		coverImage: 'https://picsum.photos/seed/hello-world/1200/800',
 		content: `
 			<h2>Pengenalan</h2>
 			<p>Selamat datang di blog saya! Saya sangat senang bisa berbagi pengetahuan dan pengalaman melalui blog ini.</p>
@@ -22,6 +23,7 @@ export const posts = [
 		author: 'Admin',
 		date: '2026-01-20',
 		excerpt: 'Tutorial dasar memulai dengan Svelte - reactive framework yang powerful dan mudah dipelajari.',
+		coverImage: 'https://picsum.photos/seed/belajar-svelte/1200/800',
 		content: `
 			<h2>Apa itu Svelte?</h2>
 			<p>Svelte adalah framework JavaScript yang mengambil pendekatan unik - compiler instead of runtime.</p>
@@ -44,6 +46,7 @@ export const posts = [
 		author: 'Admin',
 		date: '2026-02-01',
 		excerpt: 'Pahami sistem routing di SvelteKit yang menggunakan file-based approach untuk kemudahan development.',
+		coverImage: 'https://picsum.photos/seed/sveltekit-routing/1200/800',
 		content: `
 			<h2>File-Based Routing</h2>
 			<p>SvelteKit menggunakan file-based routing, mirip dengan Next.js, yang membuat struktur project lebih terorganisir.</p>
@@ -61,6 +64,7 @@ export const posts = [
 		author: 'Admin',
 		date: '2026-02-01',
 		excerpt: 'Pahami sistem routing di SvelteKit yang menggunakan file-based approach untuk kemudahan development.',
+		coverImage: 'https://picsum.photos/seed/sveltekit-routing-2/1200/800',
 		content: `
 			<h2>File-Based Routing Tes</h2>
 			<p>SvelteKit menggunakan file-based routing, mirip dengan Next.js, yang membuat struktur project lebih terorganisir.</p>
